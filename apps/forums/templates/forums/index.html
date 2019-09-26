@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>forumless</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static '/forums/style.css' %}">
+    <link rel="icon" href="{% static '/forums/void.ico' %}">
+    <script src="{% static '/forums/scripts.js' %}"></script>
+</head>
+<body>
+    <div class="topbar">
+        <a class="home" href="/">
+            <img class="home" src="{% static '/forums/void.png' %}" alt="formless icon">
+            <h1 class="home">forumless</h1>
+        </a>
+        {% if messages %}
+        <div class="messages">
+        {% for message in messages %}
+            <p> {{message}} </p>
+        {% endfor %}
+        </div>
+        {% endif%}
+        {% if 'id' in request.session %}
+        <div class="navbar">
+        <button id="newpost" onclick="postToggle()">New Post</button>
+            <div class="session">
+                <p class="welcome">Welcome {{ request.session.username }}</p>
+                <a href="#">Account</a>
+                <a href="/user/logout">Logout</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="dropdown">
+            <button class="dropdown" onclick="regToggle()">register</button>
+            <form class="drophide" id="regdrop" action="/user/register/" method="POST">
+                {% csrf_token %}
+                <input class="dropdown" type="text" name="username" placeholder="username">
+                <input class="dropdown" type="text" name="email" placeholder="email">
+                <input class="dropdown" type="password" name="password" placeholder="password">
+                <input class="dropdown" type="password" name="confirm_password" placeholder="confirm password">
+                <input class="dropdown_submit" type="submit" value="Register">
+            </form>
+            <button class="dropdown" onclick="logToggle()">log in</button>
+            <form class="drophide" id="logdrop" action="/user/login/" method="POST">
+                {% csrf_token %}
+                <input class="dropdown" type="text" name="username" placeholder="username">
+                <input class="dropdown" type="password" name="password" placeholder="password">
+                <input class="dropdown_submit" type="submit" value="Log In">
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    <div class="main">
+        <form class="drophide" id="postdrop" action="/newpost/" method="POST">
+            <img class="x" src="{% static '/forums/x.png' %}" alt="X icon" onclick="postToggle()">
+            {% csrf_token %}
+            <h3>Title</h3>
+            <input type="text" name="title">
+            <h3>Message</h3>
+            <textarea name="contents" cols="30" rows="20"></textarea>
+            <input class="dropdown_submit" type="submit"value="Submit">
+        </form>
+        {% for post in posts %}
+        <div class="post">
+            <div class="votebox">
+                {% if user in post.upvoters.all %}
+                <a id="orangered" href="/upvote/{{ post.id }}">^</a>
+                {% else %}
+                <a id="white" href="/upvote/{{ post.id }}">^</a>
+                {% endif %}
+                {% if user in post.upvoters.all %}
+                <p id="orangered">{{ post.votes }}</p>
+                {% elif user in post.downvoters.all %}
+                <p id="blue">{{ post.votes }}</p>
+                {% else %}
+                <p id="white">{{ post.votes }}</p>
+                {% endif %}
+                {% if user in post.downvoters.all %}
+                <a id="blue" class="down" href="/downvote/{{ post.id }}">^</a>
+                {% else %}
+                <a id="white" class="down" href="/downvote/{{ post.id }}">^</a>
+                {% endif %}
+            </div>
+            <div class="posttext">
+                <a class="post" href="/post/{{ post.id }}">{{ post.title }}</a>
+                <h6 class="post">Posted by <a href="#">{{ post.author.username }}</a> at {{post.created_at }}</h6>
+            </div>
+        </div>
+            {% endfor %}
+    </div>
+</body>
+</html>
