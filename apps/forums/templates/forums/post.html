@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>new post</title>
+    <title>{{ post.title }}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static '/forums/style.css' %}">
     <link rel="icon" href="{% static '/forums/void.ico' %}">
@@ -51,18 +51,31 @@
         {% endif %}
     </div>
     <div class="main">
-        <form class="drophide" id="postdrop" action="#" method="POST">
+        <form class="drophide" id="postdrop" action="/newcomment/{{ post.id }}" method="POST">
             <img class="x" src="{% static '/forums/x.png' %}" alt="X icon" onclick="postToggle()">
             {% csrf_token %}
             <h3>Message</h3>
             <textarea name="contents" cols="30" rows="20"></textarea>
-            <input class="dropdown_submit" type="submit"value="Submit">
+            <input type="submit"  class="dropdown_submit" value="Submit">
         </form>
     </div>
     <h2>{{ post.title }}</h2>
     <p>{{ post.contents }}</p>
     {% for child in post.children.all %}
-    <p>{{ child.contents }}</p>
+        <p>{{ child.contents }}</p>
+        <form action="/newcomment/{{ child.id }}" method="POST">
+            {% csrf_token %}
+            <textarea name="contents"cols="30" rows="2"></textarea>
+            <input type="submit" value="reply">
+        </form>
+        {% for subchild in child.children.all %}
+            <p>{{ subchild.contents }}</p>
+            <form action="/newcomment/{{ subchild.id }}" method="POST">
+                {% csrf_token %}
+                <textarea name="contents"cols="30" rows="2"></textarea>
+                <input type="submit" value="reply">
+            </form>
+        {% endfor %}
     {% endfor %}
 </body>
 </html>

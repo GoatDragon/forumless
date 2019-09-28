@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{% static '/forums/style.css' %}">
     <link rel="icon" href="{% static '/forums/void.ico' %}">
     <script src="{% static '/forums/scripts.js' %}"></script>
+    <script src="{% static '/forums/jquery-3.4.1.min.js' %}"></script>
 </head>
 <body>
     <div class="topbar">
@@ -65,19 +66,15 @@
             <div class="votebox">
                 {% if user in post.upvoters.all %}
                 <a id="orangered" href="/upvote/{{ post.id }}">^</a>
-                {% else %}
-                <a id="white" href="/upvote/{{ post.id }}">^</a>
-                {% endif %}
-                {% if user in post.upvoters.all %}
                 <p id="orangered">{{ post.votes }}</p>
+                <a id="white" class="down" href="/downvote/{{ post.id }}">^</a>
                 {% elif user in post.downvoters.all %}
+                <a id="white" href="/upvote/{{ post.id }}">^</a>
                 <p id="blue">{{ post.votes }}</p>
-                {% else %}
-                <p id="white">{{ post.votes }}</p>
-                {% endif %}
-                {% if user in post.downvoters.all %}
                 <a id="blue" class="down" href="/downvote/{{ post.id }}">^</a>
                 {% else %}
+                <a id="white" href="/upvote/{{ post.id }}">^</a>
+                <p id="white">{{ post.votes }}</p>
                 <a id="white" class="down" href="/downvote/{{ post.id }}">^</a>
                 {% endif %}
             </div>

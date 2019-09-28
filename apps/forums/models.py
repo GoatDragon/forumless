@@ -7,10 +7,13 @@ class PostManager(models.Manager):
         pass
 
     def create_post(self, postdata, author, parent=None):
+        title = None
+        if 'title' in postdata:
+            title = postdata['title']
         newpost = Post.objects.create(
             parent=parent,
             author=author,
-            title=postdata['title'],
+            title=title,
             contents=postdata['contents'],
             votes=1
         )
